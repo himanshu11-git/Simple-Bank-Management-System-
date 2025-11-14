@@ -264,7 +264,7 @@ void transfer() {
 
 //for showing last 5 transaction history
 void show_history() {
-    int id = loginid;  // current user
+    int id = loginid;
 
     printf("\n======== LAST TRANSACTIONS ========\n");
 
@@ -274,19 +274,19 @@ void show_history() {
     }
 
     int total = accounts[id].trans_count;
-    int start = (total > 5) ? (total - 5) : 0;
+    int limit = (total > 5) ? 5 : total;   // show only last 5
+    int start = total - limit;             // starting index
 
     for (int i = total - 1; i >= start; i--) {
-        int idx = i % 5; // circular indexing
+        int idx = i % 5;  // circular indexing
+
+        struct passbook p = accounts[id].history[idx];
+
         printf("#%d | %-8s | Rs. %.2f | From: %s | To: %s | Bal: Rs. %.2f\n",
-               accounts[id].history[idx].trans_id,
-               accounts[id].history[idx].type,
-               accounts[id].history[idx].amount,
-               accounts[id].history[idx].from,
-               accounts[id].history[idx].to,
-               accounts[id].history[idx].new_balance);
+               p.trans_id, p.type, p.amount, p.from, p.to, p.new_balance);
     }
 }
+
 
 
 //to edit passbook after every transaction
@@ -302,6 +302,7 @@ void edit_passbook(int acc_index, char type[], float amt, float bal, char from[]
 
     accounts[acc_index].trans_count++;
 }
+
 
 
 //END OF CODE
