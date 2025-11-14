@@ -182,7 +182,7 @@ int confirm() {
 //to deposit money
 void deposit() {
     float amt;  
-    printf("Enter amount to deposit: ");
+    printf("Enter amount to deposit: "); 
     scanf("%f", &amt);
     if (amt <= 0) {
         printf("Invalid amount.\n");
@@ -264,46 +264,37 @@ void transfer() {
 
 //for showing last 5 transaction history
 void show_history() {
-    int id = loginid;
-
+    struct account *acc = &accounts[loginid];
     printf("\n======== LAST TRANSACTIONS ========\n");
 
-    if (accounts[id].trans_count == 0) {
+    if (acc->trans_count == 0) {
         printf("No transactions yet.\n");
         return;
     }
 
-    int total = accounts[id].trans_count;
-    int limit = (total > 5) ? 5 : total;   // show only last 5
-    int start = total - limit;             // starting index
-
-    for (int i = total - 1; i >= start; i--) {
-        int idx = i % 5;  // circular indexing
-
-        struct passbook p = accounts[id].history[idx];
-
+    int start = acc->trans_count > 5 ? acc->trans_count - 5 : 0;
+    for (int i = acc->trans_count - 1; i >= start; i--) {
+        struct passbook *p = &acc->history[i % 5];
         printf("#%d | %-8s | Rs. %.2f | From: %s | To: %s | Bal: Rs. %.2f\n",
-               p.trans_id, p.type, p.amount, p.from, p.to, p.new_balance);
+               p->trans_id, p->type, p->amount, p->from, p->to, p->new_balance);
     }
 }
 
-
-
 //to edit passbook after every transaction
 void edit_passbook(int acc_index, char type[], float amt, float bal, char from[], char to[]) {
-    int pos = accounts[acc_index].trans_count % 5;
+    struct account *acc = &accounts[acc_index];
+    int i = acc->trans_count % 5;
 
-    accounts[acc_index].history[pos].trans_id = transc_num++;
-    strcpy(accounts[acc_index].history[pos].type, type);
-    accounts[acc_index].history[pos].amount = amt;
-    accounts[acc_index].history[pos].new_balance = bal;
-    strcpy(accounts[acc_index].history[pos].from, from);
-    strcpy(accounts[acc_index].history[pos].to, to);
+    acc->history[i].trans_id = transc_num++;   //transc number incremented globally 
+    strcpy(acc->history[i].type, type);        //transaction type, deposit/withdraw/transfer/received
+    acc->history[i].amount = amt;              //transaction amount
+    acc->history[i].new_balance = bal;         //new balance 
+    strcpy(acc->history[i].from, from);        //sender name
+    strcpy(acc->history[i].to, to);            //receiver name
 
-    accounts[acc_index].trans_count++;
+    acc->trans_count++;
 }
-
-
 
 //END OF CODE
 //Thank you for using V503-T BANK :)
+
